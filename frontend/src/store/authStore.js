@@ -1,10 +1,21 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const API_URL =
-  import.meta.env.MODE === "development"
-    ? "http://localhost:3000/api/auth"
-    : import.meta.env.VITE_API_URL || "/api/auth";
+const getApiUrl = () => {
+  if (import.meta.env.MODE === "development") {
+    return "http://localhost:3000/api/auth";
+  }
+
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL.replace(/\/$/, "");
+  }
+
+  return typeof window !== "undefined"
+    ? `${window.location.origin}/api/auth`
+    : "/api/auth";
+};
+
+const API_URL = getApiUrl();
 
 axios.defaults.withCredentials = true;
 
@@ -30,8 +41,13 @@ export const useAuthStore = create((set) => ({
         isLoading: false,
       });
     } catch (error) {
+      const message =
+        error.response?.status === 405
+          ? "The signup request hit the wrong endpoint. Set VITE_API_URL to your deployed backend URL."
+          : error.response?.data?.message || "Error signing up";
+
       set({
-        error: error.response.data.message || "Error signing up",
+        error: message,
         isLoading: false,
       });
       throw error;
