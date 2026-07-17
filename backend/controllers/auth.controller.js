@@ -7,7 +7,7 @@ import {
   sendVerificationEmail,
   sendwelcomeEmail,
   sendResetSuccessEmail,
-} from "../mailtrap/emails.js";
+} from "../mailer/emails.js";
 
 export const signup = async (req, res) => {
   const { email, password, name } = req.body;
