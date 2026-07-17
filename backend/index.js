@@ -60,12 +60,17 @@ app.use((req, res, next) => {
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || isAllowedOrigin(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+  console.log("Incoming Origin:", origin);
+  console.log("Allowed Origins:", allowedOrigins);
+
+  if (!origin || isAllowedOrigin(origin)) {
+    console.log("✅ Origin Allowed");
+    callback(null, true);
+  } else {
+    console.log("❌ Origin Blocked:", origin);
+    callback(new Error("Not allowed by CORS"));
+  }
+},
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
