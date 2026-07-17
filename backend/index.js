@@ -1,23 +1,14 @@
-import dotenv from "dotenv";
+import "./config/env.js";
+
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { connectDB } from "./db/connectDB.js";
 import { authRoutes } from "./routes/auth.route.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-
-dotenv.config({ path:path.join(__dirname, ".env"), });
-
-console.log("Loaded environment file:", envPath);
-
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
@@ -28,15 +19,13 @@ const allowedOrigins = [
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
   if (allowedOrigins.includes(origin)) return true;
-  // Allow all Vercel deployments and preview URLs
   if (/\.vercel\.app$/.test(origin)) return true;
-  // Allow all localhost variants
   if (/^https?:\/\/localhost/.test(origin)) return true;
   return false;
 };
 
-app.use(express.json()); //allows us to parse incoming request:req.body
-app.use(cookieParser()); //allows us to parse incoming cookies
+app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   cors({
@@ -45,16 +34,14 @@ app.use(
       console.log("Allowed Origins:", allowedOrigins);
 
       if (!origin || isAllowedOrigin(origin)) {
-        console.log("✅ Origin Allowed");
         callback(null, true);
       } else {
-        console.log("❌ Origin Blocked:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  }),
+  })
 );
 
 app.use("/api/auth", authRoutes);
