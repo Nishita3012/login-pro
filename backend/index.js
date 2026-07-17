@@ -24,14 +24,18 @@ const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
-  "https://login-pro-dusky.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
 ].filter(Boolean);
 
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
-  return allowedOrigins.includes(origin);
+  if (allowedOrigins.includes(origin)) return true;
+  // Allow all Vercel deployments and preview URLs
+  if (/\.vercel\.app$/.test(origin)) return true;
+  // Allow all localhost variants
+  if (/^https?:\/\/localhost/.test(origin)) return true;
+  return false;
 };
 
 app.use(express.json()); //allows us to parse incoming request:req.body
@@ -60,17 +64,17 @@ app.use((req, res, next) => {
 app.use(
   cors({
     origin: (origin, callback) => {
-  console.log("Incoming Origin:", origin);
-  console.log("Allowed Origins:", allowedOrigins);
+      console.log("Incoming Origin:", origin);
+      console.log("Allowed Origins:", allowedOrigins);
 
-  if (!origin || isAllowedOrigin(origin)) {
-    console.log("✅ Origin Allowed");
-    callback(null, true);
-  } else {
-    console.log("❌ Origin Blocked:", origin);
-    callback(new Error("Not allowed by CORS"));
-  }
-},
+      if (!origin || isAllowedOrigin(origin)) {
+        console.log("✅ Origin Allowed");
+        callback(null, true);
+      } else {
+        console.log("❌ Origin Blocked:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   }),
