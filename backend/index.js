@@ -11,11 +11,8 @@ import { authRoutes } from "./routes/auth.route.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const rootEnvPath = path.resolve(__dirname, "../.env");
-const backendEnvPath = path.resolve(__dirname, ".env");
-const envPath = fs.existsSync(backendEnvPath) ? backendEnvPath : rootEnvPath;
 
-dotenv.config({ path: envPath });
+dotenv.config({ path:path.join(__dirname, ".env"), });
 
 console.log("Loaded environment file:", envPath);
 

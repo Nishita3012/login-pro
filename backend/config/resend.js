@@ -1,10 +1,14 @@
-import dotenv from "dotenv";
 import { Resend } from "resend";
 
-dotenv.config();
-
 if (!process.env.RESEND_API_KEY) {
-  console.warn("RESEND_API_KEY is not set. Email sending will fail.");
+  console.warn("RESEND_API_KEY is not set.");
 }
+
+console.log("RESEND_API_KEY:", process.env.RESEND_API_KEY);
+
+console.log(
+  "Loaded Resend Key:",
+  process.env.RESEND_API_KEY?.slice(0, 10)
+);
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
