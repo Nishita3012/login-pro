@@ -1,7 +1,8 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./db/connectDB.js";
@@ -9,6 +10,14 @@ import { authRoutes } from "./routes/auth.route.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const rootEnvPath = path.resolve(__dirname, "../.env");
+const backendEnvPath = path.resolve(__dirname, ".env");
+const envPath = fs.existsSync(backendEnvPath) ? backendEnvPath : rootEnvPath;
+
+dotenv.config({ path: envPath });
+
+console.log("Loaded environment file:", envPath);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
