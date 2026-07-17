@@ -6,23 +6,27 @@ import {
 
 import { resend } from "../config/resend.js";
 
-const FROM_EMAIL = "onboarding@resend.dev";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
 
 export const sendVerificationEmail = async (email, verificationToken) => {
   try {
+    console.log(`Sending verification email from ${FROM_EMAIL} to ${email}`);
     const response = await resend.emails.send({
       from: FROM_EMAIL,
       to: email,
       subject: "Verify your email",
       html: VERIFICATION_EMAIL_TEMPLATE.replace(
         "{verificationCode}",
-        verificationToken
+        verificationToken,
       ),
     });
 
     console.log("Verification email sent:", response);
   } catch (error) {
-    console.error("Verification email error:", error);
+    console.error(
+      "Verification email error:",
+      error?.response?.body || error?.message || error,
+    );
     throw error;
   }
 };
@@ -52,10 +56,7 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
       from: FROM_EMAIL,
       to: email,
       subject: "Reset your password",
-      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace(
-        "{resetURL}",
-        resetURL
-      ),
+      html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
     });
 
     console.log("Password reset email sent:", response);
