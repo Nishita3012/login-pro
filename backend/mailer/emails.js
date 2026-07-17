@@ -23,11 +23,11 @@ export const sendVerificationEmail = async (email, verificationToken) => {
 
     console.log("Verification email sent:", response);
   } catch (error) {
-    console.error(
-      "Verification email error:",
-      error?.response?.body || error?.message || error,
+    const detail = error?.response?.body || error?.message || error;
+    console.error("Verification email error:", detail);
+    throw new Error(
+      `Unable to send verification email: ${JSON.stringify(detail)}`,
     );
-    throw error;
   }
 };
 

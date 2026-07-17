@@ -49,7 +49,7 @@ export const signup = async (req, res) => {
       return res.status(500).json({
         success: false,
         message:
-          "Signup failed because verification email could not be sent. Please try again later.",
+          "Signup failed because verification email could not be sent. Please check the email service configuration.",
       });
     }
 
