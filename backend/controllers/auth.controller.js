@@ -183,12 +183,10 @@ export const forgotPassword = async (req, res) => {
       `${process.env.CLIENT_URL}/reset-password/${resetToken}`,
     );
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Password reset link send to your email",
-      });
+    res.status(200).json({
+      success: true,
+      message: "Password reset link send to your email",
+    });
   } catch (error) {
     console.log("Error in forgotPassword", error);
     res.status(400).json({ success: false, message: error.message });
@@ -232,16 +230,18 @@ export const resetPassword = async (req, res) => {
 
 export const checkAuth = async (req, res) => {
   try {
+    if (!req.userId) {
+      return res.status(200).json({ success: false, user: null });
+    }
+
     const user = await User.findById(req.userId).select("-password");
     if (!user) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User not found" });
+      return res.status(200).json({ success: false, user: null });
     }
 
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.log("Error in checkAuth ", error);
-    res.status(400).json({ success: false, message: error.message });
+    return res.status(200).json({ success: false, user: null });
   }
 };
